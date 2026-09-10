@@ -59,7 +59,7 @@ Signature-Invite-Website/
 
 Repository paths must use the exact capitalization shown above. Linux-based hosting systems treat `Media/` and `media/`, or `Templates/` and `templates/`, as different directories.
 
-When adding or changing a media URL, preserve the exact folder name and encode spaces as `%0`. Example:
+When adding or changing a media URL, preserve the exact folder name and encode spaces as `%20`. Example:
 
 ```text
 Media/Wedding Template 3/hero.webp
