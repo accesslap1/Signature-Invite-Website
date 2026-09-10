@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 const img1 = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/hero.webp";
 const img2 = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/grand-palais.webp";
-import img3 from "@/imports/Frame52/9e31a0e9ae441eafb41f0326c9e4d915838d2e34.png";
+const img3 = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/wedding-banquet.webp";
 import img4 from "@/imports/Frame52/c1e75502a39e9deaa98d73dd483de7ba4cdec0ec.png";
 import img5 from "@/imports/Frame52/c66452c1e5eb78370e3a1bf29214505657de1f4a.png";
 import img6 from "@/imports/Frame52/fbb0c0433be41ad2d6a1bf2ba9e33bb85e5f83da.png";
