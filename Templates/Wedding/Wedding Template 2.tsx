@@ -87,11 +87,11 @@ const translate = (value: string, lang: Language) => {
 };
 
 const WEDDING_VIDEO =
-  "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Videos/main/Wedding%20Template%202/Intro%20video.mp4";
+  "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%202/Intro%20video.mp4";
 const WEDDING_VIDEO_MOBILE =
-  "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Videos/main/Wedding%20Template%202/Video%20Header%20Mobile.mp4";
+  "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%202/Video%20Header%20Mobile.mp4";
 const WEDDING_MUSIC =
-  "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Videos/main/Wedding%20Template%202/Marry%20You_spotdown.org.mp3";
+  "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%202/Marry%20You_spotdown.org.mp3";
 
 const ACTIVITIES = [
   { no: "01", title: "Snorkeling", time: "Fri · 09:00", desc: "Crystal Bay reef tour — gear provided" },
