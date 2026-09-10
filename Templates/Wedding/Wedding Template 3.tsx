@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import img1 from "@/imports/Frame52/97abeab594c21a53362fd81b26c8990bd44003bb.png";
+const img1 = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/hero.png";
 import img2 from "@/imports/Frame52/9ba69ff2867fc8eb7ee1662dee6dad98cd05b5a5.png";
 import img3 from "@/imports/Frame52/9e31a0e9ae441eafb41f0326c9e4d915838d2e34.png";
 import img4 from "@/imports/Frame52/c1e75502a39e9deaa98d73dd483de7ba4cdec0ec.png";
