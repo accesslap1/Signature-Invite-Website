@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@400;500;600&display=swap');
+
+* { box-sizing: border-box; }
+html, body, #root { min-height: 100%; }
+body { margin: 0; }
+
+.catalogue {
+  min-height: 100vh;
+  padding: 28px clamp(20px, 5vw, 76px) 72px;
+  color: #ece9e1;
+  background: #11100e;
+  font-family: "DM Sans", sans-serif;
+}
+.catalogueHeader { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 13px; padding-bottom: 28px; border-bottom: 1px solid #ffffff1c; }
+.brandMark { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid #d8c49b66; color: #d8c49b; font: 600 13px/1 "Manrope", sans-serif; letter-spacing: .12em; }
+.catalogueHeader p, .catalogueHeader span { margin: 0; }
+.catalogueHeader p { font-weight: 600; font-size: 14px; }
+.catalogueHeader span, .catalogueHeader b { color: #a7a39a; font-size: 11px; font-weight: 400; letter-spacing: .08em; }
+.intro { display: grid; grid-template-columns: 1.4fr .6fr; align-items: end; gap: 48px; padding: clamp(64px, 9vw, 132px) 0 clamp(50px, 7vw, 92px); }
+.intro h1 { margin: 0; font: 500 clamp(48px, 7.2vw, 112px)/.93 "Manrope", sans-serif; letter-spacing: -.065em; }
+.intro p { max-width: 440px; margin: 0 0 8px; color: #a7a39a; font-size: clamp(13px, 1.2vw, 16px); line-height: 1.7; }
+.templateGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.templateCard { color: inherit; text-decoration: none; background: #1a1916; border: 1px solid #ffffff12; transition: transform .3s ease, border-color .3s ease; }
+.templateCard:hover { transform: translateY(-5px); border-color: #ffffff40; }
+.cardVisual { position: relative; min-height: clamp(270px, 32vw, 480px); padding: 22px; display: grid; place-items: center; overflow: hidden; }
+.cardVisual::before { content: ""; position: absolute; width: 54%; aspect-ratio: 2/3; border: 1px solid #ffffff52; transform: rotate(-7deg); }
+.cardVisual::after { content: ""; position: absolute; width: 43%; aspect-ratio: 2/3; background: #ffffff0d; border: 1px solid #ffffff38; transform: rotate(8deg); backdrop-filter: blur(10px); }
+.cardVisual > * { position: relative; z-index: 1; }
+.cardVisual > span { position: absolute; top: 20px; left: 22px; font-size: 11px; letter-spacing: .16em; }
+.cardVisual small { position: absolute; right: 22px; bottom: 20px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+.cardMonogram { font: 500 clamp(60px, 8vw, 118px)/1 "Manrope", sans-serif; }
+.warm .cardVisual { background: radial-gradient(circle at 70% 20%, #d9b17f, transparent 35%), #6b432d; }
+.tropical .cardVisual { background: radial-gradient(circle at 25% 18%, #f4b9a3, transparent 30%), linear-gradient(145deg, #295d59, #173331); }
+.deco .cardVisual { background: repeating-radial-gradient(circle at 50% 110%, transparent 0 30px, #d5b34f22 31px 32px), #09090a; color: #d5b34f; }
+.night .cardVisual { background: radial-gradient(circle at 70% 35%, #a855f766, transparent 28%), radial-gradient(circle at 20% 75%, #22d3ee55, transparent 25%), #080610; }
+.cardMeta { min-height: 102px; padding: 20px 22px; display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid #ffffff12; }
+.cardMeta span { color: #918e86; font-size: 10px; text-transform: uppercase; letter-spacing: .18em; }
+.cardMeta h2 { margin: 6px 0 0; font: 500 clamp(17px, 1.8vw, 23px)/1.2 "Manrope", sans-serif; }
+.cardMeta b { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .14em; }
+.backButton { position: fixed; z-index: 100000; top: 16px; left: 16px; display: inline-flex; align-items: center; min-height: 42px; padding: 0 16px; border-radius: 999px; color: #fff; background: #11100ee8; border: 1px solid #ffffff33; box-shadow: 0 8px 30px #0005; text-decoration: none; font: 500 12px/1 "DM Sans", sans-serif; backdrop-filter: blur(12px); }
+.loading { min-height: 100vh; display: grid; place-items: center; color: #e8e4da; background: #11100e; font: 500 14px/1 "DM Sans", sans-serif; }
+
+@media (max-width: 760px) {
+  .catalogue { padding-inline: 16px; }
+  .catalogueHeader { grid-template-columns: 42px 1fr; }
+  .catalogueHeader > b { display: none; }
+  .intro { grid-template-columns: 1fr; gap: 24px; }
+  .templateGrid { grid-template-columns: 1fr; }
+  .cardVisual { min-height: 390px; }
+}
