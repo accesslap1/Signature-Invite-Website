@@ -3,7 +3,7 @@ const img1 = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Webs
 const img2 = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/grand-palais.webp";
 const img3 = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/wedding-banquet.webp";
 const img4 = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/jazz-musicians.webp";
-import img5 from "@/imports/Frame52/c66452c1e5eb78370e3a1bf29214505657de1f4a.png";
+const img5 = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/black-tie-groom.webp";
 import img6 from "@/imports/Frame52/fbb0c0433be41ad2d6a1bf2ba9e33bb85e5f83da.png";
 
 const GOLD = "#c9a227";
