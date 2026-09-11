@@ -205,6 +205,7 @@ export default function ArtDecoTemplate() {
   const [introState, setIntroState] = useState<"idle" | "playing" | "leaving" | "done">("idle");
   const introVideoRef = useRef<HTMLVideoElement | null>(null);
   const introFallbackRef = useRef<number | undefined>(undefined);
+  const rootRef = useRef<HTMLDivElement | null>(null);
   const [meal, setMeal] = useState("");
   const [rsvp, setRsvp] = useState<"yes" | "no" | "">("");
   const [submitted, setSubmitted] = useState(false);
@@ -266,6 +267,9 @@ export default function ArtDecoTemplate() {
     const onScroll = () => {
       const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
       setProgress(Math.min(1, Math.max(0, window.scrollY / max)));
+      const heroTravel = Math.min(window.innerHeight, Math.max(0, window.scrollY));
+      rootRef.current?.style.setProperty("--hero-travel", `${heroTravel * 0.16}px`);
+      rootRef.current?.style.setProperty("--hero-dim", `${Math.min(0.5, heroTravel / Math.max(1, window.innerHeight) * 0.5)}`);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -291,6 +295,7 @@ export default function ArtDecoTemplate() {
 
   return (
     <div
+      ref={rootRef}
       className="decoRoot"
       style={{
         width: viewportWidth ? `${viewportWidth}px` : "100vw",
@@ -344,10 +349,11 @@ export default function ArtDecoTemplate() {
         .decoRuleCompact i{width:8px;height:8px}.decoRuleCompact b{width:5px;height:5px}
 
         .hero{min-height:100svh;display:flex;align-items:center;justify-content:center;background:${BLACK};isolation:isolate;padding:clamp(42px,5vw,72px) clamp(18px,4vw,58px);overflow:hidden}
-        .heroMedia{position:absolute;inset:0;z-index:-4}
-        .heroMedia img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.1);opacity:.38;transform:scale(1.035)}
+        .hero:before{content:'';position:absolute;z-index:-2;inset:-35%;background:linear-gradient(112deg,transparent 39%,rgba(234,215,126,.11) 49%,rgba(201,162,39,.035) 52%,transparent 61%);transform:translateX(-44%) rotate(3deg);animation:heroGoldSweep 8.5s ease-in-out infinite}
+        .heroMedia{position:absolute;inset:-12% 0;z-index:-4;transform:translate3d(0,var(--hero-travel,0px),0);opacity:calc(1 - var(--hero-dim,0));will-change:transform,opacity}
+        .heroMedia img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.1);opacity:.38;transform:scale(1.035);animation:heroCinema 16s ease-in-out infinite alternate;will-change:transform}
         .heroMedia:after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 38%,rgba(5,4,9,.16),rgba(5,4,9,.72) 55%,${BLACK} 100%),linear-gradient(180deg,rgba(5,4,9,.62),rgba(5,4,9,.2) 48%,${BLACK} 100%)}
-        .heroSunburst{position:absolute;z-index:-3;left:50%;top:50%;width:min(1050px,94vw);aspect-ratio:1;transform:translate(-50%,-50%);opacity:.16;background:repeating-conic-gradient(from 0deg,rgba(201,162,39,.38) 0deg .7deg,transparent .7deg 10deg);mask-image:radial-gradient(circle,black 0 46%,transparent 74%)}
+        .heroSunburst{position:absolute;z-index:-3;left:50%;top:50%;width:min(1050px,94vw);aspect-ratio:1;transform:translate(-50%,-50%);opacity:.16;background:repeating-conic-gradient(from 0deg,rgba(201,162,39,.38) 0deg .7deg,transparent .7deg 10deg);mask-image:radial-gradient(circle,black 0 46%,transparent 74%);animation:decoSunburst 46s linear infinite}
         .heroFrame{position:absolute;inset:clamp(14px,2.6vw,34px);border:1px solid rgba(201,162,39,.44);pointer-events:none}
         .heroFrame:before{content:'';position:absolute;inset:8px;border:1px solid rgba(201,162,39,.16)}
         .corner{position:absolute;width:clamp(66px,8vw,128px);height:auto;pointer-events:none;opacity:.72}
@@ -371,6 +377,17 @@ export default function ArtDecoTemplate() {
         .scrollCue{position:absolute;left:50%;bottom:clamp(26px,4vw,42px);transform:translateX(-50%);display:flex;align-items:center;gap:9px;font-size:8px;letter-spacing:.35em;text-transform:uppercase;color:rgba(245,240,232,.38)}
         .scrollCue i{width:38px;height:1px;background:${GOLD};animation:pulseLine 1.8s ease-in-out infinite}
         @keyframes pulseLine{0%,100%{transform:scaleX(.35);opacity:.35}50%{transform:scaleX(1);opacity:1}}
+        @keyframes heroCinema{0%{transform:scale(1.035) translate3d(-.7%,0,0)}100%{transform:scale(1.105) translate3d(.7%,-.6%,0)}}
+        @keyframes decoSunburst{to{transform:translate(-50%,-50%) rotate(360deg)}}
+        @keyframes heroGoldSweep{0%,18%{transform:translateX(-44%) rotate(3deg);opacity:0}34%{opacity:1}58%,100%{transform:translateX(44%) rotate(3deg);opacity:0}}
+
+        .decoMarquee{position:relative;z-index:3;overflow:hidden;border-top:1px solid rgba(201,162,39,.24);border-bottom:1px solid rgba(201,162,39,.24);background:${INK};color:${GOLD_LIGHT};height:58px;display:flex;align-items:center}
+        .decoMarquee:before,.decoMarquee:after{content:'';position:absolute;z-index:2;top:0;bottom:0;width:10vw;pointer-events:none}.decoMarquee:before{left:0;background:linear-gradient(90deg,${INK},transparent)}.decoMarquee:after{right:0;background:linear-gradient(270deg,${INK},transparent)}
+        .decoMarqueeTrack{display:flex;width:max-content;animation:decoMarqueeMove 24s linear infinite;will-change:transform}
+        .decoMarqueeGroup{display:flex;align-items:center;flex:none;white-space:nowrap}
+        .decoMarqueeGroup span{font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;letter-spacing:.22em;text-transform:uppercase;padding:0 30px;color:rgba(234,215,126,.78)}
+        .decoMarqueeGroup b{width:7px;height:7px;background:${GOLD};transform:rotate(45deg);box-shadow:0 0 14px rgba(201,162,39,.44)}
+        @keyframes decoMarqueeMove{to{transform:translateX(-50%)}}
 
         .invitation{background:${CREAM};color:${INK};overflow:hidden}
         .invitationGrid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:clamp(46px,8vw,120px);align-items:center}
@@ -569,7 +586,7 @@ export default function ArtDecoTemplate() {
           .scrollCue{display:none}
         }
         @media(prefers-reduced-motion:reduce){
-          html{scroll-behavior:auto}.reveal{opacity:1;transform:none;transition:none}.midnightBurst{animation:none}.scrollCue i{animation:none}.wishActive .midnightParticles i{animation:none}
+          html{scroll-behavior:auto}.reveal{opacity:1;transform:none;transition:none}.midnightBurst,.scrollCue i,.wishActive .midnightParticles i,.heroMedia img,.heroSunburst,.hero:before,.decoMarqueeTrack{animation:none}.heroMedia{transform:none;opacity:1}
         }
       `}</style>
 
@@ -624,6 +641,19 @@ export default function ArtDecoTemplate() {
         </div>
         <div className="scrollCue"><i />Scroll into the evening<i /></div>
       </section>
+
+      <div className="decoMarquee" aria-hidden="true">
+        <div className="decoMarqueeTrack">
+          {[0, 1].map((copyIndex) => (
+            <div className="decoMarqueeGroup" key={copyIndex}>
+              <span>Victoria &amp; Edward</span><b />
+              <span>Le Grand Palais · Paris</span><b />
+              <span>New Year&apos;s Eve</span><b />
+              <span>31 December 2026</span><b />
+            </div>
+          ))}
+        </div>
+      </div>
 
       <section className="invitation sectionPad">
         <div className="shell invitationGrid">
