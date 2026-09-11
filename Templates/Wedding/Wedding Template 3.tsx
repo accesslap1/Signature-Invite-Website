@@ -683,6 +683,7 @@ export default function ArtDecoTemplate() {
     <div
       ref={rootRef}
       className="decoRoot"
+      dir={lang === "ar" ? "rtl" : "ltr"}
       style={{
         width: viewportWidth ? `${viewportWidth}px` : "100vw",
         minWidth: viewportWidth ? `${viewportWidth}px` : "100vw",
@@ -996,6 +997,53 @@ export default function ArtDecoTemplate() {
           .midnight{min-height:780px}.midnightTime{font-size:118px}.midnight h2{font-size:46px}
           .attirePhotos{height:360px;gap:8px}.attirePhoto:first-child{margin-top:36px}.attirePhoto:last-child{margin-bottom:36px}
           .rsvpForm{padding:30px 20px}.rsvpForm:before{inset:6px}
+        }
+        /* Responsive hardening: compact phones, translated copy, RTL and short landscape screens. */
+        .decoRoot,.decoRoot main,.decoRoot section,.decoRoot footer{max-width:100%;min-width:0}
+        .decoRoot img,.decoRoot video{max-width:100%}
+        .inviteCopy,.programmeIntro>*,.programmeRow>*,.venueCopy,.banquetTop>*,.course,.musicGrid>*,.lineupRow>*,.attireGrid>*,.rsvpGrid>*{min-width:0}
+        .inviteCopy h2,.sectionHeading h2,.venueCopy h2,.banquet h2,.reelCopy h2,.attire h2,.rsvpIntro h2,.success h3{overflow-wrap:anywhere}
+        .programmeTitle,.programmeVenue,.programmeNote,.lineupAct,.lineupGenre,.attireRule span,.field label{overflow-wrap:anywhere}
+        html[dir='rtl'] .programmeTime span{margin-left:0;margin-right:7px}
+        html[dir='rtl'] .programmeNote,html[dir='rtl'] .lineupSet{text-align:left}
+        html[dir='rtl'] .mealButton{text-align:right}
+        html[dir='rtl'] .venueCopy .fan{right:auto;left:-30px;transform:scaleX(-1)}
+        html[dir='rtl'] .reelControls button{text-align:right}
+
+        @media(max-width:720px){
+          .decoRoot{overflow-x:clip}
+          .openingStart{padding:24px 20px;text-align:center}.openingStart strong,.openingStart small{max-width:min(92vw,390px);line-height:1.6}.openingStart small{letter-spacing:.16em}
+          .decoControls{right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));gap:8px}
+          html[dir='rtl'] .decoControls{right:auto;left:max(12px,env(safe-area-inset-left))}
+          .hero{min-height:max(680px,100svh);padding-top:max(62px,env(safe-area-inset-top));padding-bottom:92px}
+          .heroInner{padding-inline:12px}.heroKicker{letter-spacing:.38em;line-height:1.6}.heroPlace{max-width:92%;margin-inline:auto;line-height:1.7;letter-spacing:.3em}
+          .scrollCue{width:100%;justify-content:center;white-space:nowrap}.scrollCue i{width:24px}
+          .invitationGrid{gap:40px}.inviteCopy{text-align:center}.inviteMeta{justify-content:center;flex-wrap:wrap;gap:12px 18px}
+          .programmeIntro{gap:20px;margin-bottom:34px}.programmeRow{align-items:start}.programmeNote{display:none}
+          .venueCopy>p:not(.eyebrow):not(.venueAddress),.attireRule span,.sectionCopy{font-size:13px;line-height:1.7}
+          .banquetTop{gap:18px}.banquetGrid{margin-top:36px}.banquetPhoto{margin-top:34px}
+          .musicGrid,.attireGrid,.rsvpGrid{gap:44px}.lineupAct{font-size:21px}
+          .midnight{padding-inline:18px}.midnightInner{width:100%}.midnightTime{font-size:clamp(92px,31vw,142px)}.midnight h2{font-size:clamp(38px,12vw,52px)}
+          .attireRule{grid-template-columns:minmax(76px,90px) minmax(0,1fr);gap:14px}
+          .rsvpForm{width:100%;min-width:0}.choiceButton,.mealButton{white-space:normal;line-height:1.45}
+          .footer{padding-inline:18px}.footerMark{overflow-wrap:anywhere}
+        }
+        @media(max-width:380px){
+          .sectionPad{padding:62px 15px}.hero{padding-inline:12px}.heroFrame{inset:7px}.heroFrame:before{inset:5px}
+          .corner{width:50px}.c1,.c2{top:10px}.c3,.c4{bottom:10px}.c1,.c3{left:10px}.c2,.c4{right:10px}
+          .hero h1{font-size:clamp(52px,18vw,68px)}.heroDate{font-size:16px}.countBlock{padding:17px 2px}.countBlock strong{font-size:24px}.countBlock span{font-size:6px;letter-spacing:.1em}
+          .reelOverlay{padding:32px 18px 26px}.reelPanelContent{padding:98px 18px 92px}.reelCopy h2{font-size:clamp(40px,13.5vw,52px)}.reelCopy>span{font-size:12px}.reelControls button{justify-content:center}.reelControls button span{font-size:11px}.reelControls button i{display:none}
+          .programmeRow{grid-template-columns:26px 68px minmax(0,1fr);gap:8px}.programmeTime strong{font-size:19px}.programmeTitle{font-size:18px}.programmeVenue{font-size:9px}
+          .venue{padding:8px}.venueCopy{padding:36px 18px}.venueCopy h2{font-size:44px}.venueAddress{font-size:17px}
+          .musicPhoto{min-height:340px}.lineupRow{grid-template-columns:52px minmax(0,1fr);gap:10px}.lineupTime{font-size:18px}.lineupAct{font-size:19px}
+          .attirePhotos{height:320px}.attireRule{grid-template-columns:72px minmax(0,1fr);gap:10px}.attireRule span{font-size:11px}
+          .decoPanel{width:min(244px,calc(100vw - 24px))}.decoAudioButton{width:42px;height:42px;flex-basis:42px}.decoLanguageButton{height:42px;min-width:62px;padding-inline:10px}.decoPanel,.decoLanguageMenu{bottom:50px}
+        }
+        @media(max-height:700px) and (orientation:landscape){
+          .openingMedia{object-fit:contain}.openingStartRing{width:54px;height:54px}.openingStart strong{margin-top:5px}.openingStart{gap:7px}
+          .hero{min-height:620px;height:auto;padding-block:54px 72px}.heroInner{padding-block:22px}.heroMonogram{width:50px;height:50px;margin-bottom:16px}.heroKicker{margin-bottom:12px}.hero h1{font-size:clamp(66px,12vw,104px)}.heroDate{margin-top:16px}.countdown{margin-top:18px}.scrollCue{bottom:18px}
+          .eveningReel,.eveningReelSticky{height:100svh;min-height:0}.reelOverlay{padding-top:24px;padding-bottom:22px}.reelPanelContent{padding-top:70px;padding-bottom:78px;align-items:center}.reelNumber{font-size:clamp(82px,18vw,150px)}.reelCopy h2{font-size:clamp(38px,7vw,66px)}.reelCopy>span{margin-top:12px;line-height:1.45}.reelHeading{padding-bottom:9px}.reelControls button{padding-top:8px}
+          .midnight{min-height:620px;padding-block:60px}.midnightTime{font-size:clamp(94px,19vw,160px)}.midnight h2{margin-block:20px 12px}
         }
         @media(max-height:620px) and (min-width:700px){
           .hero{min-height:760px}
