@@ -139,46 +139,192 @@ function Reveal({ children, className = "", delay = 0 }: { children: ReactNode; 
 }
 
 function EveningReel() {
-  const [progress, setProgress] = useState(0);
+  const [active, setActive] = useState(0);
+  const [locked, setLocked] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
+  const activeRef = useRef(0);
+  const lockedRef = useRef(false);
+  const previousScrollYRef = useRef(0);
+  const snapGuardRef = useRef(false);
+  const gestureBlockedRef = useRef(false);
+  const gestureTimerRef = useRef<number | null>(null);
+  const lastWheelAtRef = useRef(0);
+  const cooldownUntilRef = useRef(0);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      const section = sectionRef.current;
-      if (!section) return;
-      const start = section.offsetTop;
-      const distance = Math.max(1, section.offsetHeight - window.innerHeight);
-      setProgress(Math.min(1, Math.max(0, (window.scrollY - start) / distance)));
+    const section = sectionRef.current;
+    if (!section) return;
+    const absoluteTop = () => window.scrollY + section.getBoundingClientRect().top;
+    const clearGestureTimer = () => {
+      if (gestureTimerRef.current !== null) {
+        window.clearTimeout(gestureTimerRef.current);
+        gestureTimerRef.current = null;
+      }
+    };
+    const armGestureRelease = () => {
+      clearGestureTimer();
+      gestureTimerRef.current = window.setTimeout(() => {
+        if (performance.now() - lastWheelAtRef.current < 220) {
+          armGestureRelease();
+          return;
+        }
+        gestureBlockedRef.current = false;
+        gestureTimerRef.current = null;
+      }, 280);
+    };
+    const alignAndLock = (fromBelow: boolean) => {
+      if (Date.now() < cooldownUntilRef.current) return;
+      const top = absoluteTop();
+      const index = fromBelow ? EVENING_ACTS.length - 1 : 0;
+      lockedRef.current = true;
+      setLocked(true);
+      activeRef.current = index;
+      setActive(index);
+      gestureBlockedRef.current = true;
+      lastWheelAtRef.current = performance.now();
+      armGestureRelease();
+      snapGuardRef.current = true;
+      window.scrollTo({ top, behavior: "auto" });
+      previousScrollYRef.current = top;
+      window.requestAnimationFrame(() => { snapGuardRef.current = false; });
+    };
+    const release = (direction: 1 | -1) => {
+      lockedRef.current = false;
+      setLocked(false);
+      gestureBlockedRef.current = false;
+      clearGestureTimer();
+      cooldownUntilRef.current = Date.now() + 750;
+      const top = absoluteTop();
+      const destination = direction > 0 ? top + section.offsetHeight + 2 : Math.max(0, top - window.innerHeight * 0.72);
+      snapGuardRef.current = true;
+      window.scrollTo({ top: destination, behavior: "smooth" });
+      previousScrollYRef.current = destination;
+      window.setTimeout(() => { snapGuardRef.current = false; }, 520);
+    };
+    const step = (direction: 1 | -1) => {
+      const current = activeRef.current;
+      if (direction > 0) {
+        if (current < EVENING_ACTS.length - 1) {
+          activeRef.current = current + 1;
+          setActive(current + 1);
+        } else release(1);
+      } else if (current > 0) {
+        activeRef.current = current - 1;
+        setActive(current - 1);
+      } else release(-1);
+    };
+    const wheelDelta = (event: WheelEvent) => event.deltaMode === 1 ? event.deltaY * 16 : event.deltaMode === 2 ? event.deltaY * window.innerHeight : event.deltaY;
+    const onWheel = (event: WheelEvent) => {
+      const delta = wheelDelta(event);
+      if (!delta) return;
+      const direction: 1 | -1 = delta > 0 ? 1 : -1;
+      const rect = section.getBoundingClientRect();
+      lastWheelAtRef.current = performance.now();
+      if (!lockedRef.current) {
+        if (Date.now() < cooldownUntilRef.current) return;
+        const currentY = window.scrollY;
+        const top = currentY + rect.top;
+        const projected = currentY + direction * Math.max(Math.abs(delta) * 12, window.innerHeight * 0.72);
+        const crossing = direction > 0 ? currentY < top && projected >= top - 2 : currentY > top && projected <= top + 2;
+        const entering = direction > 0 ? rect.top > 0 && rect.top <= window.innerHeight * 0.86 : rect.top < 0 && rect.bottom >= window.innerHeight * 0.14;
+        const aligned = Math.abs(rect.top) <= 10;
+        if (crossing || entering || aligned) {
+          event.preventDefault();
+          alignAndLock(direction < 0);
+        }
+        return;
+      }
+      event.preventDefault();
+      if (gestureBlockedRef.current) {
+        armGestureRelease();
+        return;
+      }
+      gestureBlockedRef.current = true;
+      armGestureRelease();
+      step(direction);
     };
     const onScroll = () => {
-      if (!frame) frame = window.requestAnimationFrame(update);
+      if (snapGuardRef.current) return;
+      const y = window.scrollY;
+      const previous = previousScrollYRef.current;
+      const top = absoluteTop();
+      if (lockedRef.current) {
+        if (Math.abs(y - top) > 2) {
+          snapGuardRef.current = true;
+          window.scrollTo({ top, behavior: "auto" });
+          previousScrollYRef.current = top;
+          window.requestAnimationFrame(() => { snapGuardRef.current = false; });
+          return;
+        }
+      } else if (Date.now() >= cooldownUntilRef.current && ((previous < top - 1 && y >= top - 1) || (previous > top + 1 && y <= top + 1))) {
+        alignAndLock(previous > top);
+        return;
+      }
+      previousScrollYRef.current = y;
     };
-    update();
+    const onKey = (event: KeyboardEvent) => {
+      if (!lockedRef.current) return;
+      const down = event.key === "ArrowDown" || event.key === "PageDown" || event.key === " ";
+      const up = event.key === "ArrowUp" || event.key === "PageUp";
+      if (!down && !up) return;
+      event.preventDefault();
+      if (!gestureBlockedRef.current) {
+        gestureBlockedRef.current = true;
+        lastWheelAtRef.current = performance.now();
+        armGestureRelease();
+        step(down ? 1 : -1);
+      }
+    };
+    const onTouchStart = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (touch) touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+    };
+    const onTouchMove = (event: TouchEvent) => { if (lockedRef.current) event.preventDefault(); };
+    const onTouchEnd = (event: TouchEvent) => {
+      if (!lockedRef.current) return;
+      const start = touchStartRef.current;
+      const touch = event.changedTouches[0];
+      touchStartRef.current = null;
+      if (!start || !touch || gestureBlockedRef.current) return;
+      const dx = touch.clientX - start.x;
+      const dy = touch.clientY - start.y;
+      if (Math.abs(dy) < 42 || Math.abs(dy) <= Math.abs(dx)) return;
+      event.preventDefault();
+      gestureBlockedRef.current = true;
+      lastWheelAtRef.current = performance.now();
+      armGestureRelease();
+      step(dy < 0 ? 1 : -1);
+    };
+    previousScrollYRef.current = window.scrollY;
+    window.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("keydown", onKey, { passive: false });
+    section.addEventListener("touchstart", onTouchStart, { passive: true });
+    section.addEventListener("touchmove", onTouchMove, { passive: false });
+    section.addEventListener("touchend", onTouchEnd, { passive: false });
     return () => {
+      window.removeEventListener("wheel", onWheel);
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("keydown", onKey);
+      section.removeEventListener("touchstart", onTouchStart);
+      section.removeEventListener("touchmove", onTouchMove);
+      section.removeEventListener("touchend", onTouchEnd);
+      clearGestureTimer();
     };
   }, []);
 
-  const active = Math.min(EVENING_ACTS.length - 1, Math.round(progress * (EVENING_ACTS.length - 1)));
   const goToAct = (index: number) => {
-    const section = sectionRef.current;
-    if (!section) return;
-    const distance = Math.max(1, section.offsetHeight - window.innerHeight);
-    window.scrollTo({ top: section.offsetTop + (distance * index) / (EVENING_ACTS.length - 1), behavior: "smooth" });
+    activeRef.current = index;
+    setActive(index);
   };
 
   return (
-    <section className="eveningReel" ref={sectionRef} aria-label="An evening in four acts">
+    <section className={`eveningReel ${locked ? "reelLocked" : ""}`} ref={sectionRef} aria-label="An evening in four acts">
       <div className="eveningReelSticky">
-        <div className="reelTrack" style={{ transform: `translate3d(-${progress * 75}%,0,0)` }}>
+        <div className="reelTrack" style={{ transform: `translate3d(-${(active / (EVENING_ACTS.length - 1)) * 75}%,0,0)` }}>
           {EVENING_ACTS.map((act, index) => (
-            <article className="reelScene" key={act.no} aria-hidden={Math.abs(index - progress * 3) > 1}>
+            <article className="reelScene" key={act.no} aria-hidden={index !== active}>
               <img src={act.image} alt="" />
               <div className="reelSceneShade" />
               <div className="reelGeometry" aria-hidden="true"><span /><span /><span /></div>
@@ -470,9 +616,9 @@ export default function ArtDecoTemplate() {
         .decoMarqueeGroup b{width:7px;height:7px;background:${GOLD};transform:rotate(45deg);box-shadow:0 0 14px rgba(201,162,39,.44)}
         @keyframes decoMarqueeMove{to{transform:translateX(-50%)}}
 
-        .eveningReel{position:relative;height:400svh;background:${BLACK};color:${CREAM}}
+        .eveningReel{position:relative;height:100svh;min-height:620px;background:${BLACK};color:${CREAM}}
         .eveningReelSticky{position:sticky;top:0;height:100svh;min-height:620px;overflow:hidden;background:${BLACK};isolation:isolate}
-        .reelTrack{position:absolute;inset:0;display:flex;width:400%;height:100%;will-change:transform}
+        .reelTrack{position:absolute;inset:0;display:flex;width:400%;height:100%;will-change:transform;transition:transform 1s cubic-bezier(.2,.75,.2,1)}
         .reelScene{position:relative;flex:0 0 25%;width:25%;height:100%;overflow:hidden;isolation:isolate}
         .reelScene img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(.18) contrast(1.08) saturate(.82);transform:scale(1.045)}
         .reelSceneShade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,4,9,.92) 0%,rgba(5,4,9,.68) 42%,rgba(5,4,9,.18) 72%,rgba(5,4,9,.58) 100%),linear-gradient(0deg,rgba(5,4,9,.9),transparent 48%,rgba(5,4,9,.48));z-index:1}
