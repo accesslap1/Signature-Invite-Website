@@ -473,8 +473,8 @@ function Venue({lang}:{lang:Lang}) {
   const animationTimerRef=useRef<number|null>(null);
   const touchStartRef=useRef<{x:number;y:number}|null>(null);
 
-  // Scroll-guard refs. These make a fast trackpad/mouse gesture count as ONE venue step,
-  // and catch the section even if a large vertical wheel delta would otherwise jump over it.
+  // Scroll-guard refs. A gesture counts as one venue step and capture begins only
+  // when the user actually reaches the section boundary.
   const previousScrollYRef=useRef(typeof window!=="undefined"?window.scrollY:0);
   const snapGuardRef=useRef(false);
   const gestureBlockedRef=useRef(false);
@@ -517,7 +517,7 @@ function Venue({lang}:{lang:Lang}) {
     const armGestureRelease=()=>{
       clearGestureTimer();
       const elapsed=performance.now()-gestureStepAtRef.current;
-      const minHold=Math.max(0,700-elapsed);
+      const minHold=Math.max(0,900-elapsed);
       const wait=Math.max(260,minHold);
       gestureTimerRef.current=window.setTimeout(()=>{
         const quietFor=performance.now()-lastWheelAtRef.current;
@@ -610,19 +610,15 @@ function Venue({lang}:{lang:Lang}) {
 
         const currentY=window.scrollY;
         const top=currentY+rect.top;
-        // Large trackpad deltas can move much farther than deltaY suggests. Use a generous
-        // projection so the venue is captured before the browser can jump across it.
-        const projectedTravel=Math.max(Math.abs(dy)*12,window.innerHeight*.72);
-        const projectedY=currentY+(direction*projectedTravel);
+        // Capture only the wheel event that genuinely reaches the venue boundary.
+        // Do not pull the user out of the adjacent section early.
+        const projectedY=currentY+dy;
         const crossingTop=direction>0
           ? currentY<top && projectedY>=top-2
           : currentY>top && projectedY<=top+2;
-        const enteringBand=direction>0
-          ? rect.top>0 && rect.top<=window.innerHeight*.86
-          : rect.top<0 && rect.bottom>=window.innerHeight*.14;
-        const alreadyAtVenue=Math.abs(rect.top)<=10 && rect.bottom>=window.innerHeight*.62;
+        const alreadyAtVenue=Math.abs(rect.top)<=3 && rect.bottom>=window.innerHeight*.62;
 
-        if(crossingTop||enteringBand||alreadyAtVenue){
+        if(crossingTop||alreadyAtVenue){
           e.preventDefault();
           alignAndLock(direction<0);
         }
