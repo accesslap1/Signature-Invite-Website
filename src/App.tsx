@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect, useState } from "react";
 
 const WeddingOne = lazy(() => import("../Templates/Wedding/Wedding Template 1"));
 const WeddingTwo = lazy(() => import("../Templates/Wedding/Wedding Template 2"));
@@ -19,11 +19,31 @@ function currentRoute() {
 export default function App() {
   const [route, setRoute] = useState(currentRoute);
 
+  const resetScroll = () => {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  };
+
   useEffect(() => {
-    const onHashChange = () => setRoute(currentRoute());
+    try { window.history.scrollRestoration = "manual"; } catch { /* unsupported browser */ }
+    const onHashChange = () => {
+      resetScroll();
+      setRoute(currentRoute());
+    };
     window.addEventListener("hashchange", onHashChange);
     return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
+
+  useLayoutEffect(() => {
+    resetScroll();
+    const frame = window.requestAnimationFrame(resetScroll);
+    const timer = window.setTimeout(resetScroll, 120);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
+    };
+  }, [route]);
 
   const selected = templates.find((template) => template.id === route);
   if (selected) {
@@ -56,7 +76,7 @@ export default function App() {
 
       <section className="templateGrid" aria-label="Invitation templates">
         {templates.map((template) => (
-          <a className={`templateCard ${template.tone}`} href={`#/${template.id}`} key={template.id}>
+          <a className={`templateCard ${template.tone}`} href={`#/${template.id}`} key={template.id} onClick={resetScroll}>
             <div className="cardVisual">
               <span>{template.number}</span>
               <div className="cardMonogram">{template.type === "Party" ? "P" : "W"}</div>
