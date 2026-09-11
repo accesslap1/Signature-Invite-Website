@@ -5,6 +5,8 @@ const img3 = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Webs
 const img4 = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/jazz-musicians.webp";
 const img5 = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/black-tie-groom.webp";
 const img6 = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/evening-attire-couple.webp";
+const openingVideo = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/opening-animation.mp4";
+const openingPoster = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/opening-poster.webp";
 
 const GOLD = "#c9a227";
 const GOLD_LIGHT = "#ead77e";
@@ -200,6 +202,9 @@ function MidnightWish() {
 }
 
 export default function ArtDecoTemplate() {
+  const [introState, setIntroState] = useState<"idle" | "playing" | "leaving" | "done">("idle");
+  const introVideoRef = useRef<HTMLVideoElement | null>(null);
+  const introFallbackRef = useRef<number | undefined>(undefined);
   const [meal, setMeal] = useState("");
   const [rsvp, setRsvp] = useState<"yes" | "no" | "">("");
   const [submitted, setSubmitted] = useState(false);
@@ -210,6 +215,34 @@ export default function ArtDecoTemplate() {
   const [viewportWidth, setViewportWidth] = useState<number | null>(null);
   const [progress, setProgress] = useState(0);
   const weddingDate = useMemo(() => new Date("2026-12-31T18:00:00"), []);
+
+  useEffect(() => {
+    document.body.style.overflow = introState === "done" ? "" : "hidden";
+    return () => {
+      document.body.style.overflow = "";
+      if (introFallbackRef.current) window.clearTimeout(introFallbackRef.current);
+    };
+  }, [introState]);
+
+  const finishIntro = () => {
+    if (introState === "leaving" || introState === "done") return;
+    if (introFallbackRef.current) window.clearTimeout(introFallbackRef.current);
+    setIntroState("leaving");
+    window.setTimeout(() => setIntroState("done"), 820);
+  };
+
+  const startIntro = () => {
+    if (introState !== "idle") return;
+    const video = introVideoRef.current;
+    if (!video) {
+      finishIntro();
+      return;
+    }
+    setIntroState("playing");
+    video.currentTime = 0;
+    video.play().catch(finishIntro);
+    introFallbackRef.current = window.setTimeout(finishIntro, 6500);
+  };
 
   useEffect(() => {
     const syncViewport = () => {
@@ -280,6 +313,17 @@ export default function ArtDecoTemplate() {
         .decoRoot{--gold:${GOLD};--cream:${CREAM};--black:${BLACK};--charcoal:${CHARCOAL};font-family:'Outfit',sans-serif;background:${BLACK};color:${CREAM};overflow:hidden}
         .decoRoot img{display:block;max-width:100%}
         .decoRoot section,.decoRoot footer{position:relative}
+        .openingGate{position:fixed;z-index:10000;inset:0;width:100vw;height:100dvh;overflow:hidden;background:${BLACK};cursor:pointer;opacity:1;visibility:visible;transition:opacity .8s ease,visibility .8s ease}
+        .openingGate.leaving{opacity:0;visibility:hidden;pointer-events:none}
+        .openingMedia{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block;background:${BLACK};filter:brightness(.72);transition:filter .45s ease}
+        .openingGate.playing .openingMedia,.openingGate.leaving .openingMedia{filter:brightness(1)}
+        .openingShade{position:absolute;inset:0;background:radial-gradient(circle at center,transparent 35%,rgba(5,4,9,.28) 100%);opacity:1;pointer-events:none;transition:opacity .4s ease}
+        .openingGate.playing .openingShade{opacity:0}
+        .openingStart{position:absolute;z-index:2;inset:0;width:100%;height:100%;border:0;background:transparent;color:${CREAM};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-transform:uppercase;letter-spacing:.3em;transition:opacity .35s ease}
+        .openingGate.playing .openingStart{opacity:0;pointer-events:none}
+        .openingStartRing{width:72px;height:72px;border:1px solid rgba(234,215,126,.7);transform:rotate(45deg);display:grid;place-items:center;background:rgba(5,4,9,.44);box-shadow:0 0 40px rgba(201,162,39,.18)}
+        .openingStartRing span{transform:rotate(-45deg);font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:.06em;color:${GOLD_LIGHT}}
+        .openingStart strong{margin-top:14px;font-size:11px;font-weight:500}.openingStart small{font-size:8px;color:rgba(245,240,232,.58);letter-spacing:.24em}
         .scrollProgress{position:fixed;z-index:80;top:0;left:0;height:2px;background:linear-gradient(90deg,${GOLD},${GOLD_LIGHT});transform-origin:left center;box-shadow:0 0 16px rgba(201,162,39,.55);pointer-events:none}
         .shell{width:min(1180px,100%);margin-inline:auto}
         .sectionPad{padding:clamp(78px,9vw,132px) clamp(20px,5vw,64px)}
@@ -485,6 +529,7 @@ export default function ArtDecoTemplate() {
           .rsvpIntro{position:relative;top:auto}.rsvpIntro p:not(.eyebrow){max-width:620px}
         }
         @media(max-width:720px){
+          .openingMedia{object-fit:contain}
           .sectionPad{padding:72px clamp(18px,5vw,30px)}
           .hero{padding-inline:16px}
           .heroFrame{inset:10px}.heroFrame:before{inset:6px}
@@ -527,6 +572,29 @@ export default function ArtDecoTemplate() {
           html{scroll-behavior:auto}.reveal{opacity:1;transform:none;transition:none}.midnightBurst{animation:none}.scrollCue i{animation:none}.wishActive .midnightParticles i{animation:none}
         }
       `}</style>
+
+      {introState !== "done" && (
+        <div className={`openingGate ${introState}`} aria-label="Wedding invitation opening">
+          <video
+            ref={introVideoRef}
+            className="openingMedia"
+            preload="auto"
+            playsInline
+            muted
+            poster={openingPoster}
+            onEnded={finishIntro}
+            onError={finishIntro}
+          >
+            <source src={openingVideo} type="video/mp4" />
+          </video>
+          <div className="openingShade" />
+          <button className="openingStart" type="button" onClick={startIntro} aria-label="Tap to open the wedding invitation">
+            <span className="openingStartRing"><span>V·E</span></span>
+            <strong>Tap anywhere to open</strong>
+            <small>Victoria &amp; Edward · 31 December 2026</small>
+          </button>
+        </div>
+      )}
 
       <div className="scrollProgress" style={{ width: `${progress * 100}%` }} />
 
