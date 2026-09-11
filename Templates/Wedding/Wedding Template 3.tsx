@@ -139,58 +139,73 @@ function Reveal({ children, className = "", delay = 0 }: { children: ReactNode; 
 }
 
 function EveningReel() {
-  const [active, setActive] = useState(0);
-  const [running, setRunning] = useState(false);
+  const [progress, setProgress] = useState(0);
   const sectionRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    const section = sectionRef.current;
-    if (!section || typeof IntersectionObserver === "undefined") {
-      setRunning(true);
-      return;
-    }
-    const observer = new IntersectionObserver(([entry]) => setRunning(entry.isIntersecting), { threshold: 0.35 });
-    observer.observe(section);
-    return () => observer.disconnect();
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const section = sectionRef.current;
+      if (!section) return;
+      const start = section.offsetTop;
+      const distance = Math.max(1, section.offsetHeight - window.innerHeight);
+      setProgress(Math.min(1, Math.max(0, (window.scrollY - start) / distance)));
+    };
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
   }, []);
 
-  useEffect(() => {
-    if (!running) return;
-    const timer = window.setInterval(() => setActive((value) => (value + 1) % EVENING_ACTS.length), 4300);
-    return () => window.clearInterval(timer);
-  }, [running, active]);
+  const active = Math.min(EVENING_ACTS.length - 1, Math.round(progress * (EVENING_ACTS.length - 1)));
+  const goToAct = (index: number) => {
+    const section = sectionRef.current;
+    if (!section) return;
+    const distance = Math.max(1, section.offsetHeight - window.innerHeight);
+    window.scrollTo({ top: section.offsetTop + (distance * index) / (EVENING_ACTS.length - 1), behavior: "smooth" });
+  };
 
   return (
     <section className="eveningReel" ref={sectionRef} aria-label="An evening in four acts">
-      <div className="reelBackdrop">
-        {EVENING_ACTS.map((act, index) => (
-          <div className={`reelScene ${index === active ? "reelSceneActive" : ""}`} key={act.no} aria-hidden={index !== active}>
-            <img src={act.image} alt="" />
-            <div className="reelSceneShade" />
-          </div>
-        ))}
-      </div>
-      <div className="reelGeometry" aria-hidden="true"><span /><span /><span /></div>
-      <div className="reelFrame" aria-hidden="true" />
-      <div className="reelContent">
-        <div className="reelHeading">
-          <p>An evening in four acts</p>
-          <span>{String(active + 1).padStart(2, "0")} / 04</span>
-        </div>
-        <div className="reelCopy" key={active}>
-          <strong className="reelNumber">{EVENING_ACTS[active].no}</strong>
-          <div>
-            <p>{EVENING_ACTS[active].eyebrow}</p>
-            <h2>{EVENING_ACTS[active].title}</h2>
-            <span>{EVENING_ACTS[active].copy}</span>
-          </div>
-        </div>
-        <div className="reelControls">
+      <div className="eveningReelSticky">
+        <div className="reelTrack" style={{ transform: `translate3d(-${progress * 75}%,0,0)` }}>
           {EVENING_ACTS.map((act, index) => (
-            <button className={index === active ? "active" : ""} key={act.no} onClick={() => setActive(index)} aria-label={`Show act ${index + 1}`}>
-              <i /><span>{act.no}</span>
-            </button>
+            <article className="reelScene" key={act.no} aria-hidden={Math.abs(index - progress * 3) > 1}>
+              <img src={act.image} alt="" />
+              <div className="reelSceneShade" />
+              <div className="reelGeometry" aria-hidden="true"><span /><span /><span /></div>
+              <div className="reelPanelContent">
+                <strong className="reelNumber">{act.no}</strong>
+                <div className="reelCopy">
+                  <p>{act.eyebrow}</p>
+                  <h2>{act.title}</h2>
+                  <span>{act.copy}</span>
+                </div>
+              </div>
+            </article>
           ))}
+        </div>
+        <div className="reelFrame" aria-hidden="true" />
+        <div className="reelOverlay">
+          <div className="reelHeading">
+            <p>An evening in four acts</p>
+            <span>{String(active + 1).padStart(2, "0")} / 04</span>
+          </div>
+          <div className="reelControls">
+            {EVENING_ACTS.map((act, index) => (
+              <button className={index === active ? "active" : ""} key={act.no} onClick={() => goToAct(index)} aria-label={`Scroll to act ${index + 1}`}>
+                <i /><span>{act.no}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -455,22 +470,21 @@ export default function ArtDecoTemplate() {
         .decoMarqueeGroup b{width:7px;height:7px;background:${GOLD};transform:rotate(45deg);box-shadow:0 0 14px rgba(201,162,39,.44)}
         @keyframes decoMarqueeMove{to{transform:translateX(-50%)}}
 
-        .eveningReel{position:relative;height:100svh;min-height:720px;overflow:hidden;background:${BLACK};isolation:isolate;color:${CREAM}}
-        .reelBackdrop,.reelScene,.reelSceneShade{position:absolute;inset:0}
-        .reelScene{opacity:0;transform:scale(1.08);clip-path:inset(0 100% 0 0);transition:opacity .9s ease,clip-path 1.15s cubic-bezier(.2,.75,.2,1),transform 6.2s ease;z-index:0}
-        .reelSceneActive{opacity:1;transform:scale(1);clip-path:inset(0 0 0 0);z-index:1}
-        .reelScene img{width:100%;height:100%;object-fit:cover;filter:grayscale(.18) contrast(1.08) saturate(.82)}
-        .reelSceneShade{background:linear-gradient(90deg,rgba(5,4,9,.92) 0%,rgba(5,4,9,.68) 42%,rgba(5,4,9,.18) 72%,rgba(5,4,9,.58) 100%),linear-gradient(0deg,rgba(5,4,9,.9),transparent 48%,rgba(5,4,9,.48));z-index:2}
+        .eveningReel{position:relative;height:400svh;background:${BLACK};color:${CREAM}}
+        .eveningReelSticky{position:sticky;top:0;height:100svh;min-height:620px;overflow:hidden;background:${BLACK};isolation:isolate}
+        .reelTrack{position:absolute;inset:0;display:flex;width:400%;height:100%;will-change:transform}
+        .reelScene{position:relative;flex:0 0 25%;width:25%;height:100%;overflow:hidden;isolation:isolate}
+        .reelScene img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(.18) contrast(1.08) saturate(.82);transform:scale(1.045)}
+        .reelSceneShade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,4,9,.92) 0%,rgba(5,4,9,.68) 42%,rgba(5,4,9,.18) 72%,rgba(5,4,9,.58) 100%),linear-gradient(0deg,rgba(5,4,9,.9),transparent 48%,rgba(5,4,9,.48));z-index:1}
         .reelFrame{position:absolute;z-index:4;inset:clamp(16px,2.6vw,36px);border:1px solid rgba(201,162,39,.43);pointer-events:none}.reelFrame:before{content:'';position:absolute;inset:8px;border:1px solid rgba(201,162,39,.13)}
-        .reelGeometry{position:absolute;z-index:3;right:-7vw;top:50%;width:min(560px,46vw);aspect-ratio:1;transform:translateY(-50%) rotate(45deg);opacity:.34;animation:reelGeometryTurn 24s linear infinite}
+        .reelGeometry{position:absolute;z-index:2;right:-7vw;top:50%;width:min(560px,46vw);aspect-ratio:1;transform:translateY(-50%) rotate(45deg);opacity:.34;animation:reelGeometryTurn 24s linear infinite}
         .reelGeometry span{position:absolute;inset:0;border:1px solid rgba(201,162,39,.34)}.reelGeometry span:nth-child(2){inset:16%}.reelGeometry span:nth-child(3){inset:32%;background:rgba(201,162,39,.035)}
-        .reelContent{position:relative;z-index:5;width:min(1180px,100%);height:100%;margin:auto;padding:clamp(64px,8vh,96px) clamp(34px,6vw,82px);display:flex;flex-direction:column;justify-content:space-between}
+        .reelPanelContent{position:relative;z-index:3;width:min(1180px,100%);height:100%;margin:auto;padding:clamp(104px,14vh,154px) clamp(34px,6vw,82px) clamp(112px,15vh,160px);display:grid;grid-template-columns:auto minmax(0,700px);align-items:end;gap:clamp(22px,4vw,58px)}
+        .reelOverlay{position:absolute;z-index:5;inset:0;width:min(1180px,100%);height:100%;margin:auto;left:0;right:0;padding:clamp(54px,7vh,78px) clamp(34px,6vw,82px) clamp(42px,5vh,64px);display:flex;flex-direction:column;justify-content:space-between;pointer-events:none}
         .reelHeading{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(201,162,39,.24);padding-bottom:16px}.reelHeading p,.reelHeading span{margin:0;color:${GOLD_LIGHT};font-size:9px;letter-spacing:.38em;text-transform:uppercase}.reelHeading span{color:rgba(245,240,232,.52);font-variant-numeric:tabular-nums}
-        .reelCopy{display:grid;grid-template-columns:auto minmax(0,700px);align-items:end;gap:clamp(22px,4vw,58px);animation:reelCopyEnter .85s cubic-bezier(.16,1,.3,1)}
         .reelNumber{font-family:'Cormorant Garamond',serif;font-size:clamp(126px,20vw,290px);font-weight:400;line-height:.58;color:transparent;-webkit-text-stroke:1px rgba(234,215,126,.5);text-shadow:0 0 60px rgba(201,162,39,.1)}
-        .reelCopy p{margin:0 0 15px;color:${GOLD_LIGHT};font-size:10px;letter-spacing:.4em;text-transform:uppercase}.reelCopy h2{margin:0;font-family:'Cormorant Garamond',serif;font-size:clamp(52px,7.5vw,104px);font-weight:500;line-height:.84;letter-spacing:-.04em;text-wrap:balance}.reelCopy div>span{display:block;margin-top:24px;max-width:520px;color:rgba(245,240,232,.66);font-size:clamp(13px,1.3vw,17px);line-height:1.65}
-        .reelControls{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.reelControls button{appearance:none;border:0;border-top:1px solid rgba(245,240,232,.2);background:transparent;color:rgba(245,240,232,.38);padding:13px 0 0;display:flex;align-items:center;gap:10px;text-align:left;cursor:pointer;transition:color .3s,border-color .3s}.reelControls button i{display:block;width:0;height:2px;background:${GOLD};transition:width .45s ease;box-shadow:0 0 10px rgba(201,162,39,.5)}.reelControls button span{font-family:'Cormorant Garamond',serif;font-size:14px}.reelControls button.active{border-color:${GOLD};color:${GOLD_LIGHT}}.reelControls button.active i{width:26px}
-        @keyframes reelCopyEnter{from{opacity:0;transform:translateY(44px);filter:blur(7px)}to{opacity:1;transform:none;filter:none}}
+        .reelCopy p{margin:0 0 15px;color:${GOLD_LIGHT};font-size:10px;letter-spacing:.4em;text-transform:uppercase}.reelCopy h2{margin:0;font-family:'Cormorant Garamond',serif;font-size:clamp(52px,7.5vw,104px);font-weight:500;line-height:.84;letter-spacing:-.04em;text-wrap:balance}.reelCopy>span{display:block;margin-top:24px;max-width:520px;color:rgba(245,240,232,.66);font-size:clamp(13px,1.3vw,17px);line-height:1.65}
+        .reelControls{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;pointer-events:auto}.reelControls button{appearance:none;border:0;border-top:1px solid rgba(245,240,232,.2);background:transparent;color:rgba(245,240,232,.38);padding:13px 0 0;display:flex;align-items:center;gap:10px;text-align:left;cursor:pointer;transition:color .3s,border-color .3s}.reelControls button i{display:block;width:0;height:2px;background:${GOLD};transition:width .45s ease;box-shadow:0 0 10px rgba(201,162,39,.5)}.reelControls button span{font-family:'Cormorant Garamond',serif;font-size:14px}.reelControls button.active{border-color:${GOLD};color:${GOLD_LIGHT}}.reelControls button.active i{width:26px}
         @keyframes reelGeometryTurn{to{transform:translateY(-50%) rotate(405deg)}}
 
         .invitation{background:${CREAM};color:${INK};overflow:hidden}
@@ -631,7 +645,7 @@ export default function ArtDecoTemplate() {
         }
         @media(max-width:720px){
           .openingMedia{object-fit:contain}
-          .eveningReel{min-height:720px}.reelContent{padding:48px 28px 42px}.reelSceneShade{background:linear-gradient(0deg,rgba(5,4,9,.96) 0%,rgba(5,4,9,.68) 56%,rgba(5,4,9,.28) 100%)}.reelGeometry{width:88vw;right:-42vw;top:28%}.reelCopy{grid-template-columns:1fr;gap:18px}.reelNumber{font-size:112px;line-height:.6}.reelCopy h2{font-size:clamp(48px,14vw,70px)}.reelCopy div>span{margin-top:17px}.reelControls{gap:7px}.reelControls button span{font-size:12px}.reelHeading p{letter-spacing:.22em}
+          .eveningReelSticky{min-height:620px}.reelOverlay{padding:42px 28px 34px}.reelPanelContent{padding:112px 28px 106px;grid-template-columns:1fr;gap:18px}.reelSceneShade{background:linear-gradient(0deg,rgba(5,4,9,.96) 0%,rgba(5,4,9,.68) 56%,rgba(5,4,9,.28) 100%)}.reelGeometry{width:88vw;right:-42vw;top:28%}.reelNumber{font-size:112px;line-height:.6}.reelCopy h2{font-size:clamp(48px,14vw,70px)}.reelCopy>span{margin-top:17px}.reelControls{gap:7px}.reelControls button span{font-size:12px}.reelHeading p{letter-spacing:.22em}
           .sectionPad{padding:72px clamp(18px,5vw,30px)}
           .hero{padding-inline:16px}
           .heroFrame{inset:10px}.heroFrame:before{inset:6px}
@@ -671,7 +685,7 @@ export default function ArtDecoTemplate() {
           .scrollCue{display:none}
         }
         @media(prefers-reduced-motion:reduce){
-          html{scroll-behavior:auto}.reveal{opacity:1;transform:none;transition:none}.midnightBurst,.scrollCue i,.wishActive .midnightParticles i,.heroMedia img,.heroSunburst,.hero:before,.decoMarqueeTrack,.reelGeometry,.reelCopy{animation:none}.reelScene{transition:none}.heroMedia{transform:none;opacity:1}
+          html{scroll-behavior:auto}.reveal{opacity:1;transform:none;transition:none}.midnightBurst,.scrollCue i,.wishActive .midnightParticles i,.heroMedia img,.heroSunburst,.hero:before,.decoMarqueeTrack,.reelGeometry{animation:none}.heroMedia{transform:none;opacity:1}
         }
       `}</style>
 
