@@ -5,6 +5,7 @@ const img3 = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Webs
 const img4 = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/jazz-musicians.webp";
 const img5 = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/black-tie-groom.webp";
 const img6 = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/evening-attire-couple.webp";
+const eiffelMidnight = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/eiffel-tower-midnight.webp";
 const openingVideo = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/opening-animation.mp4";
 const openingPoster = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/opening-poster.webp";
 
@@ -417,6 +418,7 @@ function MidnightWish() {
 
   return (
     <section className={`midnight ${wished ? "wishActive" : ""}`}>
+      <div className="midnightBackdrop" aria-hidden="true"><img src={eiffelMidnight} alt="" /><span /></div>
       <div className="midnightBurst" aria-hidden="true" />
       <div className="midnightParticles" aria-hidden="true">
         {particles.map((i) => <i key={i} style={{ "--i": i } as CSSProperties} />)}
@@ -719,6 +721,7 @@ export default function ArtDecoTemplate() {
         .lineupSet{font-size:8px;text-transform:uppercase;letter-spacing:.22em;color:rgba(201,162,39,.62);text-align:right}
 
         .midnight{min-height:min(900px,100svh);background:${BLACK};display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;isolation:isolate;padding:90px 22px}
+        .midnightBackdrop{position:absolute;z-index:-4;inset:0;overflow:hidden}.midnightBackdrop img{width:100%;height:100%;object-fit:cover;object-position:center 47%;filter:grayscale(.18) saturate(.82) contrast(1.08);opacity:.56;transform:scale(1.035)}.midnightBackdrop span{position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,4,9,.66),rgba(5,4,9,.52) 42%,rgba(5,4,9,.82)),radial-gradient(circle at 50% 48%,rgba(5,4,9,.18),rgba(5,4,9,.72) 74%)}
         .midnightBurst{position:absolute;z-index:-2;width:min(1000px,110vw);aspect-ratio:1;border-radius:50%;background:repeating-conic-gradient(from 0deg,rgba(201,162,39,.25) 0deg .8deg,transparent .8deg 8deg);mask-image:radial-gradient(circle,black 0 24%,transparent 68%);opacity:.34;animation:slowSpin 45s linear infinite}
         @keyframes slowSpin{to{transform:rotate(360deg)}}
         .midnightInner{max-width:880px;position:relative;z-index:2}
