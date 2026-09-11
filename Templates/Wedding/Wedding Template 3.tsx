@@ -8,6 +8,7 @@ const img6 = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Webs
 const eiffelMidnight = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/eiffel-tower-midnight.webp";
 const openingVideo = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/opening-animation.mp4";
 const openingPoster = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%203/opening-poster.webp";
+const weddingMusic = "https://raw.githubusercontent.com/accesslap1/Signature-Invite-Website/main/Media/Wedding%20Template%202/Marry%20You_spotdown.org.mp3";
 
 const GOLD = "#c9a227";
 const GOLD_LIGHT = "#ead77e";
@@ -16,6 +17,45 @@ const INK = "#0c0a11";
 const CHARCOAL = "#17131c";
 const CREAM = "#f5f0e8";
 const MUTED = "#b8b0a6";
+
+type Language = "en" | "fr" | "ar";
+
+const TRANSLATIONS: Record<Exclude<Language, "en">, Record<string, string>> = {
+  fr: {
+    "Tap anywhere to open": "Touchez pour ouvrir", "Wedding invitation opening": "Ouverture de l’invitation de mariage", "Tap to open the wedding invitation": "Touchez pour ouvrir l’invitation de mariage",
+    "The marriage of": "Le mariage de", "New Year's Eve · 31 December 2026": "Réveillon du Nouvel An · 31 décembre 2026", "Le Grand Palais · Paris, France": "Le Grand Palais · Paris, France", "Scroll into the evening": "Entrez dans la soirée",
+    "New Year's Eve": "Réveillon du Nouvel An", "December": "Décembre", "Together with their families": "Entourés de leurs familles", "The honour of your presence is requested.": "L’honneur de votre présence est demandé.",
+    "Champagne · 18:00": "Champagne · 18 h", "Ceremony · 19:00": "Cérémonie · 19 h", "Black Tie Required": "Tenue de soirée exigée", "An evening in four acts": "Une soirée en quatre actes",
+    "18:00 · Arrival": "18 h · Arrivée", "The Grand Entrance": "La grande entrée", "Champagne beneath the glass roof as Paris prepares for midnight.": "Du champagne sous la verrière tandis que Paris se prépare pour minuit.",
+    "19:00 · Ceremony": "19 h · Cérémonie", "The Vows": "Les vœux", "A candlelit ceremony framed in black, ivory and antique gold.": "Une cérémonie aux chandelles, entre noir, ivoire et or ancien.",
+    "21:00 · Banquet": "21 h · Banquet", "Dinner in Four Acts": "Dîner en quatre actes", "A grand table, French cuisine and a room glowing with celebration.": "Une grande table, une cuisine française et une salle illuminée par la fête.",
+    "22:30 · Dancing": "22 h 30 · Danse", "Until Midnight": "Jusqu’à minuit", "Live jazz rises into the final countdown and the first dance of 2027.": "Le jazz accompagne le compte à rebours puis la première danse de 2027.",
+    "The programme": "Le programme", "“Paris is always a good idea. On New Year's Eve, it is irresistible.”": "« Paris est toujours une bonne idée. Au réveillon, elle devient irrésistible. »",
+    "Champagne Reception": "Réception au champagne", "Grand Ballroom Foyer": "Foyer du grand salon", "Black Tie": "Tenue de soirée", "Wedding Ceremony": "Cérémonie de mariage", "Grand Ballroom": "Grand salon", "The vows": "Les vœux", "Cocktail Hour": "Cocktail", "Terrace Magnifique": "Terrasse Magnifique", "Champagne & canapés": "Champagne et canapés", "Banquet Dinner": "Dîner de gala", "Four acts at the table": "Quatre actes à table", "Jazz Orchestra & Dancing": "Orchestre de jazz et danse", "Ballroom Floor": "Piste du salon", "Until the countdown": "Jusqu’au compte à rebours", "Midnight Champagne Toast": "Toast au champagne à minuit", "Rooftop Terrace": "Terrasse sur le toit", "Hello, 2027": "Bienvenue, 2027",
+    "The venue": "Le lieu", "Built for the 1900 World's Fair, its monumental glass nave and gilded ironwork become our ballroom for one winter night.": "Construit pour l’Exposition universelle de 1900, sa nef monumentale et ses ferronneries dorées deviennent notre salle de bal pour une nuit d’hiver.", "Valet parking on Avenue du Général Eisenhower": "Service voiturier avenue du Général Eisenhower", "Hôtel de Crillon room block · VICTORIA26": "Chambres réservées à l’Hôtel de Crillon · VICTORIA26",
+    "The banquet": "Le banquet", "Four acts": "Quatre actes", "at the table.": "à table.", "French classics, a little theatre, and champagne poured all the way to midnight.": "Des classiques français, un peu de théâtre et du champagne jusqu’à minuit.", "COURSE ": "SERVICE ", "Champagne until midnight.": "Champagne jusqu’à minuit.",
+    "Live from Paris": "En direct de Paris", "After Dark": "Après la nuit", "Reception": "Réception", "Dinner": "Dîner", "Dancing": "Danse", "Late Night": "Fin de soirée",
+    "At the stroke of midnight": "Aux douze coups de minuit", "One kiss. One toast.": "Un baiser. Un toast.", "One new year.": "Une nouvelle année.", "Meet us on the rooftop terrace as Paris turns gold and 2027 begins.": "Retrouvez-nous sur la terrasse tandis que Paris se pare d’or et que 2027 commence.", "Make a midnight wish": "Faire un vœu à minuit", "Wish made ✦": "Vœu formulé ✦",
+    "The black tie edit": "L’élégance black tie", "Dress for": "Habillez-vous pour", "the last night": "la dernière nuit", "of the year.": "de l’année.", "Old-world glamour, sharp tailoring and just enough sparkle to catch the chandeliers.": "Glamour d’antan, coupes impeccables et juste assez d’éclat pour capter les lustres.", "Gentlemen": "Messieurs", "Ladies": "Mesdames", "A small note": "Une petite note", "Black or white tuxedo · black bow tie · polished evening shoes": "Smoking noir ou blanc · nœud papillon noir · chaussures de soirée", "Floor-length gown or refined cocktail · beading, satin and feathers welcome": "Robe longue ou cocktail raffinée · perles, satin et plumes bienvenus", "Please leave ivory and white to the bride.": "Merci de réserver l’ivoire et le blanc à la mariée.",
+    "Your response": "Votre réponse", "We would be delighted to begin the new year with you.": "Nous serions ravis de commencer la nouvelle année avec vous.", "Kindly reply by 1 November 2026": "Merci de répondre avant le 1er novembre 2026", "First name": "Prénom", "Last name": "Nom", "Email address": "Adresse e-mail", "Attendance": "Présence", "Joyfully accepts": "Accepte avec joie", "Regretfully declines": "Décline avec regret", "Dinner selection": "Choix du dîner", "Dietary notes": "Notes alimentaires", "Allergies or dietary restrictions…": "Allergies ou restrictions alimentaires…", "Send response": "Envoyer la réponse", "Please add your name and email before sending your response.": "Veuillez saisir votre nom et votre e-mail.", "Please tell us whether you will be joining us.": "Veuillez nous indiquer si vous serez des nôtres.", "Please choose a dinner selection.": "Veuillez choisir votre dîner.",
+    "Wedding soundtrack": "Musique du mariage", "Now playing": "Lecture en cours", "Music volume": "Volume de la musique", "Mute music": "Couper la musique", "Unmute music": "Activer la musique", "Language": "Langue", "days": "jours", "hours": "heures", "minutes": "minutes", "seconds": "secondes"
+  },
+  ar: {
+    "Tap anywhere to open": "المس لفتح الدعوة", "Wedding invitation opening": "افتتاح دعوة الزفاف", "Tap to open the wedding invitation": "المس لفتح دعوة الزفاف", "The marriage of": "زفاف", "New Year's Eve · 31 December 2026": "ليلة رأس السنة · 31 ديسمبر 2026", "Le Grand Palais · Paris, France": "القصر الكبير · باريس، فرنسا", "Scroll into the evening": "اكتشفوا الأمسية", "New Year's Eve": "ليلة رأس السنة", "December": "ديسمبر", "Together with their families": "برفقة عائلتيهما", "The honour of your presence is requested.": "نتشرف بدعوتكم للحضور.", "Champagne · 18:00": "الشمبانيا · 18:00", "Ceremony · 19:00": "المراسم · 19:00", "Black Tie Required": "الزي الرسمي مطلوب", "An evening in four acts": "أمسية من أربعة فصول",
+    "18:00 · Arrival": "18:00 · الوصول", "The Grand Entrance": "الدخول الكبير", "Champagne beneath the glass roof as Paris prepares for midnight.": "شمبانيا تحت السقف الزجاجي بينما تستعد باريس لمنتصف الليل.", "19:00 · Ceremony": "19:00 · المراسم", "The Vows": "العهود", "A candlelit ceremony framed in black, ivory and antique gold.": "مراسم على ضوء الشموع بألوان الأسود والعاجي والذهبي العتيق.", "21:00 · Banquet": "21:00 · المأدبة", "Dinner in Four Acts": "عشاء من أربعة فصول", "A grand table, French cuisine and a room glowing with celebration.": "مائدة فاخرة ومطبخ فرنسي وقاعة تتوهج بالاحتفال.", "22:30 · Dancing": "22:30 · الرقص", "Until Midnight": "حتى منتصف الليل", "Live jazz rises into the final countdown and the first dance of 2027.": "يتصاعد الجاز الحي نحو العد التنازلي وأول رقصة في 2027.",
+    "The programme": "البرنامج", "“Paris is always a good idea. On New Year's Eve, it is irresistible.”": "«باريس دائماً فكرة جميلة، وفي ليلة رأس السنة لا تُقاوم.»", "Champagne Reception": "استقبال الشمبانيا", "Grand Ballroom Foyer": "بهو القاعة الكبرى", "Black Tie": "زي رسمي", "Wedding Ceremony": "مراسم الزفاف", "Grand Ballroom": "القاعة الكبرى", "The vows": "العهود", "Cocktail Hour": "ساعة الاستقبال", "Terrace Magnifique": "تراس مانييفيك", "Champagne & canapés": "شمبانيا ومقبلات", "Banquet Dinner": "عشاء المأدبة", "Four acts at the table": "أربعة فصول على المائدة", "Jazz Orchestra & Dancing": "أوركسترا الجاز والرقص", "Ballroom Floor": "ساحة الرقص", "Until the countdown": "حتى العد التنازلي", "Midnight Champagne Toast": "نخب الشمبانيا عند منتصف الليل", "Rooftop Terrace": "تراس السطح", "Hello, 2027": "مرحباً 2027",
+    "The venue": "المكان", "Built for the 1900 World's Fair, its monumental glass nave and gilded ironwork become our ballroom for one winter night.": "شُيّد لمعرض عام 1900، وتتحول قاعته الزجاجية وزخارفه المذهبة إلى قاعة رقصنا لليلة شتوية.", "Valet parking on Avenue du Général Eisenhower": "خدمة صف السيارات في شارع الجنرال أيزنهاور", "Hôtel de Crillon room block · VICTORIA26": "غرف محجوزة في فندق دو كريون · VICTORIA26", "The banquet": "المأدبة", "Four acts": "أربعة فصول", "at the table.": "على المائدة.", "French classics, a little theatre, and champagne poured all the way to midnight.": "أطباق فرنسية كلاسيكية ولمسة مسرحية وشمبانيا حتى منتصف الليل.", "COURSE ": "الطبق ", "Champagne until midnight.": "شمبانيا حتى منتصف الليل.", "Live from Paris": "مباشرة من باريس", "After Dark": "بعد حلول الظلام", "Reception": "الاستقبال", "Dinner": "العشاء", "Dancing": "الرقص", "Late Night": "آخر الليل",
+    "At the stroke of midnight": "عند دقات منتصف الليل", "One kiss. One toast.": "قبلة واحدة. نخب واحد.", "One new year.": "عام جديد واحد.", "Meet us on the rooftop terrace as Paris turns gold and 2027 begins.": "انضموا إلينا على تراس السطح بينما تتوهج باريس بالذهب ويبدأ عام 2027.", "Make a midnight wish": "تمنَّ أمنية منتصف الليل", "Wish made ✦": "تمت الأمنية ✦", "The black tie edit": "أناقة الزي الرسمي", "Dress for": "تأنقوا من أجل", "the last night": "الليلة الأخيرة", "of the year.": "من العام.", "Old-world glamour, sharp tailoring and just enough sparkle to catch the chandeliers.": "سحر كلاسيكي وقصات أنيقة ولمعان يكفي لالتقاط ضوء الثريات.", "Gentlemen": "السادة", "Ladies": "السيدات", "A small note": "ملاحظة صغيرة", "Black or white tuxedo · black bow tie · polished evening shoes": "بدلة توكسيدو سوداء أو بيضاء · ربطة عنق سوداء · حذاء سهرة", "Floor-length gown or refined cocktail · beading, satin and feathers welcome": "فستان طويل أو كوكتيل أنيق · الخرز والساتان والريش مرحب بها", "Please leave ivory and white to the bride.": "يرجى ترك العاجي والأبيض للعروس.",
+    "Your response": "ردكم", "We would be delighted to begin the new year with you.": "يسعدنا أن نبدأ العام الجديد معكم.", "Kindly reply by 1 November 2026": "يرجى الرد قبل 1 نوفمبر 2026", "First name": "الاسم الأول", "Last name": "اسم العائلة", "Email address": "البريد الإلكتروني", "Attendance": "الحضور", "Joyfully accepts": "أقبل بكل سرور", "Regretfully declines": "أعتذر عن الحضور", "Dinner selection": "اختيار العشاء", "Dietary notes": "ملاحظات غذائية", "Allergies or dietary restrictions…": "الحساسية أو القيود الغذائية…", "Send response": "إرسال الرد", "Please add your name and email before sending your response.": "يرجى إدخال الاسم والبريد الإلكتروني.", "Please tell us whether you will be joining us.": "يرجى إخبارنا إن كنتم ستنضمون إلينا.", "Please choose a dinner selection.": "يرجى اختيار وجبة العشاء.", "Wedding soundtrack": "موسيقى الزفاف", "Now playing": "قيد التشغيل", "Music volume": "مستوى صوت الموسيقى", "Mute music": "كتم الموسيقى", "Unmute music": "تشغيل الموسيقى", "Language": "اللغة", "days": "أيام", "hours": "ساعات", "minutes": "دقائق", "seconds": "ثوانٍ"
+  }
+};
+
+const translate = (value: string, lang: Language) => {
+  if (lang === "en") return value;
+  const dictionary = TRANSLATIONS[lang];
+  if (dictionary[value]) return dictionary[value];
+  return Object.entries(dictionary).reduce((result, [source, translated]) => source.length > 2 ? result.split(source).join(translated) : result, value);
+};
 
 const PROGRAMME = [
   { no: "I", time: "6:00", meridiem: "PM", title: "Champagne Reception", venue: "Grand Ballroom Foyer", note: "Black Tie" },
@@ -136,6 +176,15 @@ function Reveal({ children, className = "", delay = 0 }: { children: ReactNode; 
     <div ref={ref} className={`reveal ${visible ? "revealOn" : ""} ${className}`} style={{ transitionDelay: `${delay}ms` }}>
       {children}
     </div>
+  );
+}
+
+function SpeakerIcon({ muted }: { muted: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path d="M4 10v4h4l5 4V6L8 10H4Z" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+      {muted ? <path d="M17 9l4 6M21 9l-4 6" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /> : <path d="M16 9.5c1.6 1.4 1.6 3.6 0 5M18.7 7.2c3 2.8 3 6.8 0 9.6" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />}
+    </svg>
   );
 }
 
@@ -441,6 +490,23 @@ export default function ArtDecoTemplate() {
   const introVideoRef = useRef<HTMLVideoElement | null>(null);
   const introFallbackRef = useRef<number | undefined>(undefined);
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const controlsRef = useRef<HTMLDivElement | null>(null);
+  const originalTextRef = useRef<WeakMap<Text, string>>(new WeakMap());
+  const originalAttributesRef = useRef<WeakMap<Element, Record<string, string>>>(new WeakMap());
+  const [audioOpen, setAudioOpen] = useState(false);
+  const [languageOpen, setLanguageOpen] = useState(false);
+  const [lang, setLang] = useState<Language>(() => {
+    if (typeof window === "undefined") return "en";
+    const saved = window.localStorage.getItem("art-deco-wedding-language");
+    return saved === "fr" || saved === "ar" ? saved : "en";
+  });
+  const [muted, setMuted] = useState(false);
+  const [volume, setVolume] = useState(() => {
+    if (typeof window === "undefined") return 0.55;
+    const saved = Number(window.localStorage.getItem("wedding-volume"));
+    return Number.isFinite(saved) && saved >= 0 && saved <= 1 ? saved : 0.55;
+  });
   const [meal, setMeal] = useState("");
   const [rsvp, setRsvp] = useState<"yes" | "no" | "">("");
   const [submitted, setSubmitted] = useState(false);
@@ -460,6 +526,64 @@ export default function ArtDecoTemplate() {
     };
   }, [introState]);
 
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+    window.localStorage.setItem("art-deco-wedding-language", lang);
+    const root = rootRef.current;
+    if (!root) return;
+
+    const translateNode = (nodeRoot: Node) => {
+      const processText = (node: Text) => {
+        const parent = node.parentElement;
+        if (!parent || parent.closest("style,script,.decoControls")) return;
+        const currentCore = (node.nodeValue || "").trim();
+        if (currentCore && /^[\d\s:%./·–—-]+$/.test(currentCore)) return;
+        if (!originalTextRef.current.has(node)) originalTextRef.current.set(node, node.nodeValue || "");
+        const original = originalTextRef.current.get(node) || "";
+        const core = original.trim();
+        const leading = original.match(/^\s*/)?.[0] || "";
+        const trailing = original.match(/\s*$/)?.[0] || "";
+        const next = core ? `${leading}${translate(core, lang)}${trailing}` : original;
+        if (node.nodeValue !== next) node.nodeValue = next;
+      };
+      if (nodeRoot instanceof Text) processText(nodeRoot);
+      const walker = document.createTreeWalker(nodeRoot, NodeFilter.SHOW_TEXT);
+      let node = walker.nextNode() as Text | null;
+      while (node) { processText(node); node = walker.nextNode() as Text | null; }
+      const elements = nodeRoot instanceof Element ? [nodeRoot, ...Array.from(nodeRoot.querySelectorAll("*"))] : [];
+      elements.forEach((element) => {
+        const saved = originalAttributesRef.current.get(element) || {};
+        ["placeholder", "aria-label", "title"].forEach((name) => {
+          const current = element.getAttribute(name);
+          if (current !== null && saved[name] === undefined) saved[name] = current;
+          if (saved[name] !== undefined) element.setAttribute(name, translate(saved[name], lang));
+        });
+        originalAttributesRef.current.set(element, saved);
+      });
+    };
+    translateNode(root);
+    const observer = new MutationObserver((records) => records.forEach((record) => {
+      record.addedNodes.forEach(translateNode);
+      if (record.type === "characterData") translateNode(record.target);
+    }));
+    observer.observe(root, { subtree: true, childList: true, characterData: true });
+    return () => observer.disconnect();
+  }, [lang]);
+
+  useEffect(() => {
+    const closeMenus = (event: PointerEvent) => {
+      if (!controlsRef.current?.contains(event.target as Node)) { setAudioOpen(false); setLanguageOpen(false); }
+    };
+    document.addEventListener("pointerdown", closeMenus);
+    return () => document.removeEventListener("pointerdown", closeMenus);
+  }, []);
+
+  useEffect(() => {
+    if (audioRef.current) { audioRef.current.volume = volume; audioRef.current.muted = muted; }
+    window.localStorage.setItem("wedding-volume", String(volume));
+  }, [volume, muted]);
+
   const finishIntro = () => {
     if (introState === "leaving" || introState === "done") return;
     if (introFallbackRef.current) window.clearTimeout(introFallbackRef.current);
@@ -477,7 +601,34 @@ export default function ArtDecoTemplate() {
     setIntroState("playing");
     video.currentTime = 0;
     video.play().catch(finishIntro);
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.volume = volume;
+      audioRef.current.muted = muted;
+      audioRef.current.loop = true;
+      audioRef.current.play().catch(() => undefined);
+    }
     introFallbackRef.current = window.setTimeout(finishIntro, 6500);
+  };
+
+  const toggleMute = () => {
+    const next = !muted;
+    setMuted(next);
+    if (audioRef.current) {
+      audioRef.current.muted = next;
+      if (!next) void audioRef.current.play().catch(() => undefined);
+    }
+  };
+
+  const changeVolume = (next: number) => {
+    const safe = Math.min(1, Math.max(0, next));
+    setVolume(safe);
+    if (safe > 0) setMuted(false);
+    if (audioRef.current) {
+      audioRef.current.volume = safe;
+      audioRef.current.muted = safe === 0;
+      if (safe > 0) void audioRef.current.play().catch(() => undefined);
+    }
   };
 
   useEffect(() => {
@@ -565,6 +716,19 @@ export default function ArtDecoTemplate() {
         .openingStartRing span{transform:rotate(-45deg);font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:.06em;color:${GOLD_LIGHT}}
         .openingStart strong{margin-top:14px;font-size:11px;font-weight:500}.openingStart small{font-size:8px;color:rgba(245,240,232,.58);letter-spacing:.24em}
         .scrollProgress{position:fixed;z-index:80;top:0;left:0;height:2px;background:linear-gradient(90deg,${GOLD},${GOLD_LIGHT});transform-origin:left center;box-shadow:0 0 16px rgba(201,162,39,.55);pointer-events:none}
+        .decoControls{position:fixed;z-index:90;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));display:flex;align-items:flex-end;gap:10px;direction:ltr}
+        html[dir='rtl'] .decoControls{right:auto;left:max(18px,env(safe-area-inset-left))}
+        .decoControlWrap{position:relative;display:flex;align-items:flex-end}
+        .decoAudioButton,.decoLanguageButton{height:46px;border:1px solid rgba(234,215,126,.34);border-radius:0;background:rgba(5,4,9,.92);color:${GOLD_LIGHT};display:grid;place-items:center;box-shadow:0 14px 34px rgba(0,0,0,.38);backdrop-filter:blur(16px)}
+        .decoAudioButton{width:46px;flex:0 0 46px}.decoMuteButton{width:34px;height:34px;box-shadow:none}
+        .decoLanguageButton{min-width:68px;padding:0 13px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:10px;font-weight:600;letter-spacing:.12em}
+        .decoPanel,.decoLanguageMenu{position:absolute;right:0;bottom:56px;border:1px solid rgba(201,162,39,.32);background:rgba(12,10,17,.97);box-shadow:0 20px 48px rgba(0,0,0,.48);animation:decoControlIn .2s ease;color:${CREAM}}
+        html[dir='rtl'] .decoPanel,html[dir='rtl'] .decoLanguageMenu{right:auto;left:0;transform-origin:bottom left}
+        .decoPanel{width:min(250px,calc(100vw - 36px));padding:15px;transform-origin:bottom right}
+        .decoPanelHead{display:grid;grid-template-columns:minmax(0,1fr) 46px;gap:12px;align-items:center;margin-bottom:13px}.decoPanelTitle strong,.decoPanelTitle span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.decoPanelTitle strong{font-family:'Cormorant Garamond',serif;font-size:16px;color:${GOLD_LIGHT}}.decoPanelTitle span{font-size:8px;text-transform:uppercase;letter-spacing:.16em;color:rgba(245,240,232,.52)}.decoPanelValue{text-align:right;font-size:10px;color:${GOLD_LIGHT}}.decoPanel[dir='rtl'] .decoPanelValue{text-align:left}
+        .decoVolumeRow{display:grid;grid-template-columns:34px minmax(0,1fr);align-items:center;gap:10px}.decoVolumeRow input{width:100%;min-width:0;margin:0;accent-color:${GOLD}}
+        .decoLanguageMenu{width:144px;padding:6px;transform-origin:bottom right}.decoLanguageMenu button{width:100%;border:0;background:transparent;color:rgba(245,240,232,.64);padding:10px 11px;text-align:left;font-size:11px}.decoLanguageMenu button:hover,.decoLanguageMenu button.active{background:rgba(201,162,39,.16);color:${GOLD_LIGHT}}.decoLanguageMenu button[dir='rtl']{text-align:right}
+        @keyframes decoControlIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
         .shell{width:min(1180px,100%);margin-inline:auto}
         .sectionPad{padding:clamp(78px,9vw,132px) clamp(20px,5vw,64px)}
         .eyebrow{margin:0 0 16px;color:${GOLD};font-size:11px;line-height:1.2;text-transform:uppercase;letter-spacing:.46em;font-weight:600}
@@ -844,6 +1008,8 @@ export default function ArtDecoTemplate() {
         }
       `}</style>
 
+      <audio ref={audioRef} src={weddingMusic} preload="auto" loop />
+
       {introState !== "done" && (
         <div className={`openingGate ${introState}`} aria-label="Wedding invitation opening">
           <video
@@ -864,6 +1030,40 @@ export default function ArtDecoTemplate() {
             <strong>Tap anywhere to open</strong>
             <small>Victoria &amp; Edward · 31 December 2026</small>
           </button>
+        </div>
+      )}
+
+      {introState === "done" && (
+        <div className="decoControls" ref={controlsRef}>
+          <div className="decoControlWrap">
+            {languageOpen && (
+              <div className="decoLanguageMenu" role="menu" aria-label={translate("Language", lang)}>
+                {(["en", "fr", "ar"] as Language[]).map((code) => (
+                  <button key={code} type="button" role="menuitemradio" aria-checked={lang === code} className={lang === code ? "active" : ""} dir={code === "ar" ? "rtl" : "ltr"} onClick={() => { setLang(code); setLanguageOpen(false); }}>
+                    {code === "en" ? "English" : code === "fr" ? "Français" : "العربية"}
+                  </button>
+                ))}
+              </div>
+            )}
+            <button className="decoLanguageButton" type="button" aria-label={translate("Language", lang)} aria-expanded={languageOpen} onClick={() => { setLanguageOpen((value) => !value); setAudioOpen(false); }}>
+              <span aria-hidden="true">◎</span>{lang.toUpperCase()}
+            </button>
+          </div>
+          <div className="decoControlWrap">
+            {audioOpen && (
+              <div className="decoPanel" dir={lang === "ar" ? "rtl" : "ltr"}>
+                <div className="decoPanelHead">
+                  <div className="decoPanelTitle"><strong>{translate("Wedding soundtrack", lang)}</strong><span>{translate("Now playing", lang)}</span></div>
+                  <div className="decoPanelValue" aria-live="polite">{Math.round(volume * 100)}%</div>
+                </div>
+                <div className="decoVolumeRow">
+                  <button type="button" className="decoAudioButton decoMuteButton" onClick={toggleMute} aria-label={translate(muted ? "Unmute music" : "Mute music", lang)}><SpeakerIcon muted={muted || volume === 0} /></button>
+                  <input aria-label={translate("Music volume", lang)} type="range" min="0" max="1" step="0.01" value={volume} onChange={(event) => changeVolume(Number(event.target.value))} />
+                </div>
+              </div>
+            )}
+            <button className="decoAudioButton" type="button" aria-label={translate("Music volume", lang)} aria-expanded={audioOpen} onClick={() => { setAudioOpen((value) => !value); setLanguageOpen(false); }}><SpeakerIcon muted={muted || volume === 0} /></button>
+          </div>
         </div>
       )}
 
