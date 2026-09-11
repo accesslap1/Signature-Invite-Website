@@ -149,6 +149,7 @@ function EveningReel() {
   const gestureBlockedRef = useRef(false);
   const gestureTimerRef = useRef<number | null>(null);
   const lastWheelAtRef = useRef(0);
+  const gestureStepAtRef = useRef(0);
   const cooldownUntilRef = useRef(0);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
@@ -164,6 +165,8 @@ function EveningReel() {
     };
     const armGestureRelease = () => {
       clearGestureTimer();
+      const elapsed = performance.now() - gestureStepAtRef.current;
+      const minimumTransitionHold = Math.max(0, 1100 - elapsed);
       gestureTimerRef.current = window.setTimeout(() => {
         if (performance.now() - lastWheelAtRef.current < 220) {
           armGestureRelease();
@@ -171,7 +174,7 @@ function EveningReel() {
         }
         gestureBlockedRef.current = false;
         gestureTimerRef.current = null;
-      }, 280);
+      }, Math.max(280, minimumTransitionHold));
     };
     const alignAndLock = (fromBelow: boolean) => {
       if (Date.now() < cooldownUntilRef.current) return;
@@ -182,6 +185,7 @@ function EveningReel() {
       activeRef.current = index;
       setActive(index);
       gestureBlockedRef.current = true;
+      gestureStepAtRef.current = performance.now();
       lastWheelAtRef.current = performance.now();
       armGestureRelease();
       snapGuardRef.current = true;
@@ -225,11 +229,10 @@ function EveningReel() {
         if (Date.now() < cooldownUntilRef.current) return;
         const currentY = window.scrollY;
         const top = currentY + rect.top;
-        const projected = currentY + direction * Math.max(Math.abs(delta) * 12, window.innerHeight * 0.72);
+        const projected = currentY + delta;
         const crossing = direction > 0 ? currentY < top && projected >= top - 2 : currentY > top && projected <= top + 2;
-        const entering = direction > 0 ? rect.top > 0 && rect.top <= window.innerHeight * 0.86 : rect.top < 0 && rect.bottom >= window.innerHeight * 0.14;
-        const aligned = Math.abs(rect.top) <= 10;
-        if (crossing || entering || aligned) {
+        const aligned = Math.abs(rect.top) <= 3;
+        if (crossing || aligned) {
           event.preventDefault();
           alignAndLock(direction < 0);
         }
@@ -241,6 +244,7 @@ function EveningReel() {
         return;
       }
       gestureBlockedRef.current = true;
+      gestureStepAtRef.current = performance.now();
       armGestureRelease();
       step(direction);
     };
@@ -271,6 +275,7 @@ function EveningReel() {
       event.preventDefault();
       if (!gestureBlockedRef.current) {
         gestureBlockedRef.current = true;
+        gestureStepAtRef.current = performance.now();
         lastWheelAtRef.current = performance.now();
         armGestureRelease();
         step(down ? 1 : -1);
@@ -292,6 +297,7 @@ function EveningReel() {
       if (Math.abs(dy) < 42 || Math.abs(dy) <= Math.abs(dx)) return;
       event.preventDefault();
       gestureBlockedRef.current = true;
+      gestureStepAtRef.current = performance.now();
       lastWheelAtRef.current = performance.now();
       armGestureRelease();
       step(dy < 0 ? 1 : -1);
